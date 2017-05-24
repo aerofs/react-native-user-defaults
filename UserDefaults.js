@@ -40,6 +40,22 @@ const userDefaults = {
     })
   },
 
+  getAll: (suiteName, cb) => {
+    return new Promise((resolve, reject) => {
+      UserDefaults.getAllInSuite(suiteName, (err, data) => {
+        if (err) {
+          const error = new Error('Get failed for all keys')
+          cb && cb(error)
+          reject(error)
+        } else {
+          console.log(data)
+          cb && cb(null, data)
+          resolve(data)
+        }
+      })
+    })
+  },
+
   remove: (key, suiteName, cb) => {
     return new Promise((resolve, reject) => {
       UserDefaults.removeObject(key, suiteName, (err, data) => {
