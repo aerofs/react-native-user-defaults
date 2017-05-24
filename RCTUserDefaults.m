@@ -1,5 +1,7 @@
 #import "RCTUserDefaults.h"
 
+#define DEFAULT_PREFIX @"__SOME_RANDOM_PREFIX_"
+
 @implementation RCTUserDefaults
 
 -(NSUserDefaults*)userDefaultsForSuiteName:(NSString *)suiteName {
@@ -11,6 +13,9 @@
 
 -(NSString*)keyWithPrefixForKey:(NSString *)key suiteName:(NSString *)suiteName {
     NSString *prefix = [[suiteName componentsSeparatedByString: @"."] lastObject];
+    if (prefix == nil) {
+        prefix = DEFAULT_PREFIX;
+    }
     NSString *keyWithPrefix = [NSString stringWithFormat:@"%@-%@", prefix, key];
     return keyWithPrefix;
 }
@@ -44,6 +49,7 @@ RCT_EXPORT_METHOD(empty:(NSString *)suiteName callback:(RCTResponseSenderBlock)c
     NSDictionary *defaultsDict = [userDefaults dictionaryRepresentation];
     for (NSString *key in [defaultsDict allKeys]) {
         NSString *prefix = [[suiteName componentsSeparatedByString: @"."] lastObject];
+        if (prefix == nil) prefix = DEFAULT_PREFIX;
         if ([key hasPrefix:prefix]) {
             [userDefaults removeObjectForKey:key];
         }
@@ -57,6 +63,7 @@ RCT_EXPORT_METHOD(getAllInSuite:(NSString *)suiteName callback:(RCTResponseSende
     NSMutableDictionary *returnDict = [[NSMutableDictionary alloc] initWithCapacity:10];
     for (NSString *key in [allDict allKeys]) {
         NSString *prefix = [[suiteName componentsSeparatedByString: @"."] lastObject];
+        if (prefix == nil) prefix = DEFAULT_PREFIX;
         if ([key hasPrefix:prefix]) {
             NSString *withoutPrefix = [key substringFromIndex:prefix.length + 1];
             [returnDict setObject:[allDict objectForKey:key] forKey:withoutPrefix];
